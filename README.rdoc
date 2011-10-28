@@ -7,7 +7,7 @@ transforming one external request in to multiple internal requests.
 
 == Installation
 
-gem install octarine
+  $ gem install octarine
 
 == Usage
 
