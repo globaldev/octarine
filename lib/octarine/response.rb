@@ -1,6 +1,6 @@
 require "forwardable"
 
-module Octarine
+module Octarine # :nodoc:
   class Response
     attr_accessor :body, :status, :header
     alias headers header
@@ -9,6 +9,12 @@ module Octarine
     extend Forwardable
     def_delegators :to_ary, :first, :last
     
+    # :call-seq: Response.new(body) -> response
+    # Response.new(body, header) -> response
+    # Response.new(body, header, status) -> response
+    # 
+    # Create a new Response instance.
+    # 
     def initialize(body=[], header={}, status=200)
       status, header = header, status if header.respond_to?(:to_i)
       @body = body
@@ -17,6 +23,25 @@ module Octarine
       header["content-type"] ||= "text/html" unless [204, 304].include?(@status)
     end
     
+    # :call-seq: response.update {|body| block } -> response
+    # response.update(path) {|value| block } -> response
+    # 
+    # Called without an argument, the block will be supplied the response body,
+    # and the response body will be set to the result of the block. The response
+    # itself is returned.
+    # 
+    # When called with an argument the body should be a hash, the body will be
+    # traversed accoring to the path supplied, the value of the body will be
+    # yielded to the block, and then replaced with the result of the block.
+    # Example:
+    #   response.body
+    #   #=> {"data" => [{"user" => "1234", "message" => "..."}]}
+    #   
+    #   response.update("data.user") {|id| User.find(id).to_hash}
+    #   
+    #   response.body
+    #   #=> {"data" => [{"user" => {"id" => "1234", ...}, "message" => "..."}]}
+    # 
     def update(path=nil, &block)
       @body = if body.respond_to?(:to_ary) && path.nil?
         block.call(body)
@@ -26,10 +51,18 @@ module Octarine
       self
     end
     
+    # :call-seq: response[key] -> value
+    # 
+    # Get a header.
+    # 
     def [](key)
       (key.is_a?(Numeric) ? to_ary : header)[key]
     end
     
+    # :call-seq: response[key] = value -> value
+    # 
+    # Set a header.
+    # 
     def []=(key, value)
       return header[key] = value unless key.is_a?(Numeric)
       case key
@@ -44,6 +77,11 @@ module Octarine
       end
     end
     
+    # :call-seq: response.to_ary -> array
+    # response.to_a -> array
+    # 
+    # Convert to a Rack response array of [status, headers, body]
+    # 
     def to_ary
       [status, header, body.respond_to?(:each) ? body : [body].compact]
     end
