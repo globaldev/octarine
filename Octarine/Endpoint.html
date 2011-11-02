@@ -1,0 +1,622 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+
+	<title>Class: Octarine::Endpoint</title>
+
+	<link rel="stylesheet" href="../rdoc.css" type="text/css" media="screen" />
+
+	<script src="../js/jquery.js" type="text/javascript"
+		charset="utf-8"></script>
+	<script src="../js/thickbox-compressed.js" type="text/javascript"
+		charset="utf-8"></script>
+	<script src="../js/quicksearch.js" type="text/javascript"
+		charset="utf-8"></script>
+	<script src="../js/darkfish.js" type="text/javascript"
+		charset="utf-8"></script>
+
+</head>
+<body class="class">
+
+	<div id="metadata">
+		<div id="home-metadata">
+			<div id="home-section" class="section">
+        <h3 class="section-header">
+          <a href="../index.html">Home</a>
+          <a href="../index.html#classes">Classes</a>
+          <a href="../index.html#methods">Methods</a>
+        </h3>
+			</div>
+		</div>
+
+		<div id="file-metadata">
+			<div id="file-list-section" class="section">
+				<h3 class="section-header">In Files</h3>
+				<div class="section-body">
+					<ul>
+					
+						<li><a href="../lib/octarine/endpoint_rb.html?TB_iframe=true&amp;height=550&amp;width=785"
+							class="thickbox" title="lib/octarine/endpoint.rb">lib/octarine/endpoint.rb</a></li>
+					
+					</ul>
+				</div>
+			</div>
+
+			
+		</div>
+
+		<div id="class-metadata">
+
+			<!-- Parent Class -->
+			
+			<div id="parent-class-section" class="section">
+				<h3 class="section-header">Parent</h3>
+				
+				<p class="link">Object</p>
+				
+			</div>
+			
+
+			<!-- Namespace Contents -->
+			
+
+			<!-- Method Quickref -->
+			
+			<div id="method-list-section" class="section">
+				<h3 class="section-header">Methods</h3>
+				<ul class="link-list">
+					
+					<li><a href="#method-c-new">::new</a></li>
+					
+					<li><a href="#method-i-%5B%5D">#[]</a></li>
+					
+					<li><a href="#method-i-call">#call</a></li>
+					
+					<li><a href="#method-i-delete">#delete</a></li>
+					
+					<li><a href="#method-i-get">#get</a></li>
+					
+					<li><a href="#method-i-head">#head</a></li>
+					
+					<li><a href="#method-i-join">#join</a></li>
+					
+					<li><a href="#method-i-method_missing">#method_missing</a></li>
+					
+					<li><a href="#method-i-post">#post</a></li>
+					
+					<li><a href="#method-i-put">#put</a></li>
+					
+				</ul>
+			</div>
+			
+
+			<!-- Included Modules -->
+			
+		</div>
+
+		<div id="project-metadata">
+			
+			
+			<div id="fileindex-section" class="section project-section">
+				<h3 class="section-header">Files</h3>
+				<ul>
+				
+					<li class="file"><a href="../README_rdoc.html">README.rdoc</a></li>
+				
+				</ul>
+			</div>
+			
+
+			<div id="classindex-section" class="section project-section">
+				<h3 class="section-header">Class Index
+					<span class="search-toggle"><img src="../images/find.png"
+						height="16" width="16" alt="[+]"
+						title="show/hide quicksearch" /></span></h3>
+				<form action="#" method="get" accept-charset="utf-8" class="initially-hidden">
+				<fieldset>
+					<legend>Quicksearch</legend>
+					<input type="text" name="quicksearch" value=""
+						class="quicksearch-field" />
+				</fieldset>
+				</form>
+
+				<ul class="link-list">
+				
+					<li><a href="../Octarine/App.html">Octarine::App</a></li>
+				
+					<li><a href="../Octarine/App/ClassMethods.html">Octarine::App::ClassMethods</a></li>
+				
+					<li><a href="../Octarine/Endpoint.html">Octarine::Endpoint</a></li>
+				
+					<li><a href="../Octarine/Path.html">Octarine::Path</a></li>
+				
+					<li><a href="../Octarine/Request.html">Octarine::Request</a></li>
+				
+					<li><a href="../Octarine/Response.html">Octarine::Response</a></li>
+				
+					<li><a href="../Octarine/SimpleHTTP.html">Octarine::SimpleHTTP</a></li>
+				
+				</ul>
+				<div id="no-class-search-results" style="display: none;">No matching classes.</div>
+			</div>
+
+			
+		</div>
+	</div>
+
+	<div id="documentation">
+		<h1 class="class">Octarine::Endpoint</h1>
+
+		<div id="description">
+			<p>
+<a href="Endpoint.html">Octarine::Endpoint</a> is a wrapper round a http
+client that presents a DSL for generating paths and making requests.
+</p>
+<p>
+Examples:
+</p>
+<pre>
+  # GET users/123/messages/567
+  endpoint.users(123).messages[567]
+
+  # GET 123/details/address
+  endpoint.(123).details[&quot;address&quot;]
+
+  # POST users/123/messages
+  endpoint.users(123).post(&quot;messages&quot;, body)</pre>
+
+		</div>
+
+		<!-- Constants -->
+		
+
+		<!-- Attributes -->
+		
+		<div id="attribute-method-details" class="method-section section">
+			<h3 class="section-header">Attributes</h3>
+
+			
+			<div id="path-attribute-method" class="method-detail">
+				<a name="path"></a>
+				
+				<a name="path="></a>
+				
+				<div class="method-heading attribute-method-heading">
+					<span class="method-name">path</span><span
+						class="attribute-access-type">[RW]</span>
+				</div>
+
+				<div class="method-description">
+				
+				
+				
+				</div>
+			</div>
+			
+			<div id="client-attribute-method" class="method-detail">
+				<a name="client"></a>
+				
+				<div class="method-heading attribute-method-heading">
+					<span class="method-name">client</span><span
+						class="attribute-access-type">[R]</span>
+				</div>
+
+				<div class="method-description">
+				
+				
+				
+				</div>
+			</div>
+			
+		</div>
+		
+
+		<!-- Methods -->
+		
+		<div id="public-class-method-details" class="method-section section">
+			<h3 class="section-header">Public Class Methods</h3>
+
+		
+			<div id="new-method" class="method-detail ">
+				<a name="method-c-new"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-callseq">new(client) &rarr; endpoint</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Create a new <a href="Endpoint.html">Endpoint</a> instance, either with a
+string of host:port, or a http client instance API compatible with <a
+href="SimpleHTTP.html">Octarine::SimpleHTTP</a>
+</p>
+					
+
+					
+					<div class="method-source-code"
+						id="new-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/octarine/endpoint.rb, line 36</span>
+36:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">host_or_client</span>)
+37:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">host_or_client</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-value">:get</span>)
+38:         <span class="ruby-ivar">@client</span> = <span class="ruby-identifier">host_or_client</span>
+39:       <span class="ruby-keyword kw">else</span>
+40:         <span class="ruby-ivar">@client</span> = <span class="ruby-constant">Octarine</span><span class="ruby-operator">::</span><span class="ruby-constant">SimpleHTTP</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">host_or_client</span>)
+41:       <span class="ruby-keyword kw">end</span>
+42:       <span class="ruby-ivar">@path</span> = <span class="ruby-value str">&quot;&quot;</span>
+43:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+		</div>
+	
+		<div id="public-instance-method-details" class="method-section section">
+			<h3 class="section-header">Public Instance Methods</h3>
+
+		
+			<div id="--method" class="method-detail method-alias">
+				<a name="method-i-%5B%5D"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">[]</span><span
+						class="method-args">(id, headers={})</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					
+					
+
+					
+				</div>
+
+				
+
+				
+				<div class="aliases">
+          Alias for: <a href="Endpoint.html#method-i-get">get</a>
+				</div>
+				
+			</div>
+
+		
+			<div id="call-method" class="method-detail ">
+				<a name="method-i-call"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-callseq">(obj) &rarr; new_endpoint</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Returns a new endpoint with the string respresentation of obj added to the
+path. E.g. `endpoint.(123)` will return an endpoint with `/123` appended to
+the path.
+</p>
+					
+
+					
+					<div class="method-source-code"
+						id="call-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/octarine/endpoint.rb, line 52</span>
+52:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">call</span>(<span class="ruby-identifier">id</span>)
+53:       <span class="ruby-identifier">method_missing</span>(<span class="ruby-identifier">id</span>)
+54:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="delete-method" class="method-detail ">
+				<a name="method-i-delete"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-callseq">head(id, headers={}) &rarr; response</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Make a DELETE request to endpoint&#8217;s path plus `/id`.
+</p>
+					
+
+					
+					<div class="method-source-code"
+						id="delete-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/octarine/endpoint.rb, line 113</span>
+113:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">delete</span>(<span class="ruby-identifier">id</span>, <span class="ruby-identifier">headers</span>={})
+114:       <span class="ruby-identifier">response</span> = <span class="ruby-identifier">client</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">join</span>(<span class="ruby-identifier">path</span>, <span class="ruby-identifier">id</span>.<span class="ruby-identifier">to_s</span>), <span class="ruby-identifier">headers</span>)
+115:       <span class="ruby-constant">Octarine</span><span class="ruby-operator">::</span><span class="ruby-constant">Response</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">response</span>.<span class="ruby-identifier">body</span>, <span class="ruby-identifier">response</span>.<span class="ruby-identifier">headers</span>, <span class="ruby-identifier">response</span>.<span class="ruby-identifier">status</span>)
+116:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="get-method" class="method-detail ">
+				<a name="method-i-get"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-callseq">head(id, headers={}) &rarr; response
+endpoint[id] &rarr; response</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Make a GET request to endpoint&#8217;s path plus `/id`.
+</p>
+					
+
+					
+					<div class="method-source-code"
+						id="get-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/octarine/endpoint.rb, line 85</span>
+85:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">get</span>(<span class="ruby-identifier">id</span>, <span class="ruby-identifier">headers</span>={})
+86:       <span class="ruby-identifier">response</span> = <span class="ruby-identifier">client</span>.<span class="ruby-identifier">get</span>(<span class="ruby-identifier">join</span>(<span class="ruby-identifier">path</span>, <span class="ruby-identifier">id</span>.<span class="ruby-identifier">to_s</span>), <span class="ruby-identifier">headers</span>)
+87:       <span class="ruby-constant">Octarine</span><span class="ruby-operator">::</span><span class="ruby-constant">Response</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">response</span>.<span class="ruby-identifier">body</span>, <span class="ruby-identifier">response</span>.<span class="ruby-identifier">headers</span>, <span class="ruby-identifier">response</span>.<span class="ruby-identifier">status</span>)
+88:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+				<div class="aliases">
+					Also aliased as: <a href="Endpoint.html#method-i-%5B%5D">[]</a>
+				</div>
+				
+
+				
+			</div>
+
+		
+			<div id="head-method" class="method-detail ">
+				<a name="method-i-head"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-callseq">head(id, headers={}) &rarr; response</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Make a HEAD request to endpoint&#8217;s path plus `/id`.
+</p>
+					
+
+					
+					<div class="method-source-code"
+						id="head-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/octarine/endpoint.rb, line 75</span>
+75:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">head</span>(<span class="ruby-identifier">id</span>, <span class="ruby-identifier">headers</span>={})
+76:       <span class="ruby-identifier">response</span> = <span class="ruby-identifier">client</span>.<span class="ruby-identifier">head</span>(<span class="ruby-identifier">join</span>(<span class="ruby-identifier">path</span>, <span class="ruby-identifier">id</span>.<span class="ruby-identifier">to_s</span>), <span class="ruby-identifier">headers</span>)
+77:       <span class="ruby-constant">Octarine</span><span class="ruby-operator">::</span><span class="ruby-constant">Response</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">response</span>.<span class="ruby-identifier">body</span>, <span class="ruby-identifier">response</span>.<span class="ruby-identifier">headers</span>, <span class="ruby-identifier">response</span>.<span class="ruby-identifier">status</span>)
+78:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="method-missing-method" class="method-detail ">
+				<a name="method-i-method_missing"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-callseq">anything &rarr; new_endpoint</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Implements the path generation DSL.
+</p>
+<pre>
+  endpoint.foo(1).bar   #=&gt; new endpoint with path set to /foo/1/bar</pre>
+					
+
+					
+					<div class="method-source-code"
+						id="method-missing-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/octarine/endpoint.rb, line 64</span>
+64:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">method_missing</span>(<span class="ruby-identifier">name</span>, *<span class="ruby-identifier">args</span>)
+65:       <span class="ruby-keyword kw">super</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">args</span>.<span class="ruby-identifier">length</span> <span class="ruby-operator">&lt;=</span> <span class="ruby-value">1</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-operator">!</span><span class="ruby-identifier">block_given?</span>
+66:       <span class="ruby-identifier">copy</span> = <span class="ruby-identifier">dup</span>
+67:       <span class="ruby-identifier">copy</span>.<span class="ruby-identifier">path</span> = <span class="ruby-identifier">join</span>(<span class="ruby-identifier">copy</span>.<span class="ruby-identifier">path</span>, <span class="ruby-identifier">name</span>.<span class="ruby-identifier">to_s</span>, *<span class="ruby-identifier">args</span>)
+68:       <span class="ruby-identifier">copy</span>
+69:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="post-method" class="method-detail ">
+				<a name="method-i-post"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-callseq">head(id, body=nil, headers={}) &rarr; response</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Make a POST request to endpoint&#8217;s path plus `/id`.
+</p>
+					
+
+					
+					<div class="method-source-code"
+						id="post-source">
+<pre>
+    <span class="ruby-comment cmt"># File lib/octarine/endpoint.rb, line 95</span>
+95:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">post</span>(<span class="ruby-identifier">id</span>, <span class="ruby-identifier">body</span>=<span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">headers</span>={})
+96:       <span class="ruby-identifier">response</span> = <span class="ruby-identifier">client</span>.<span class="ruby-identifier">post</span>(<span class="ruby-identifier">join</span>(<span class="ruby-identifier">path</span>, <span class="ruby-identifier">id</span>.<span class="ruby-identifier">to_s</span>), <span class="ruby-identifier">body</span>, <span class="ruby-identifier">headers</span>)
+97:       <span class="ruby-constant">Octarine</span><span class="ruby-operator">::</span><span class="ruby-constant">Response</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">response</span>.<span class="ruby-identifier">body</span>, <span class="ruby-identifier">response</span>.<span class="ruby-identifier">headers</span>, <span class="ruby-identifier">response</span>.<span class="ruby-identifier">status</span>)
+98:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+			<div id="put-method" class="method-detail ">
+				<a name="method-i-put"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-callseq">head(id, body=nil, headers={}) &rarr; response</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					<p>
+Make a PUT request to endpoint&#8217;s path plus `/id`.
+</p>
+					
+
+					
+					<div class="method-source-code"
+						id="put-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/octarine/endpoint.rb, line 104</span>
+104:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">put</span>(<span class="ruby-identifier">id</span>, <span class="ruby-identifier">body</span>=<span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">headers</span>={})
+105:       <span class="ruby-identifier">response</span> = <span class="ruby-identifier">client</span>.<span class="ruby-identifier">put</span>(<span class="ruby-identifier">join</span>(<span class="ruby-identifier">path</span>, <span class="ruby-identifier">id</span>.<span class="ruby-identifier">to_s</span>), <span class="ruby-identifier">body</span>, <span class="ruby-identifier">headers</span>)
+106:       <span class="ruby-constant">Octarine</span><span class="ruby-operator">::</span><span class="ruby-constant">Response</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">response</span>.<span class="ruby-identifier">body</span>, <span class="ruby-identifier">response</span>.<span class="ruby-identifier">headers</span>, <span class="ruby-identifier">response</span>.<span class="ruby-identifier">status</span>)
+107:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+		</div>
+	
+		<div id="private-instance-method-details" class="method-section section">
+			<h3 class="section-header">Private Instance Methods</h3>
+
+		
+			<div id="join-method" class="method-detail ">
+				<a name="method-i-join"></a>
+
+				<div class="method-heading">
+				
+					<span class="method-name">join</span><span
+						class="method-args">(*paths)</span>
+					<span class="method-click-advice">click to toggle source</span>
+				
+				</div>
+
+				<div class="method-description">
+					
+					
+					
+
+					
+					<div class="method-source-code"
+						id="join-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/octarine/endpoint.rb, line 120</span>
+120:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">join</span>(*<span class="ruby-identifier">paths</span>)
+121:       <span class="ruby-identifier">paths</span>.<span class="ruby-identifier">map</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">path</span><span class="ruby-operator">|</span> <span class="ruby-identifier">path</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">%{(^/|/$)}</span>, <span class="ruby-value str">&quot;&quot;</span>)}.<span class="ruby-identifier">join</span>(<span class="ruby-value str">&quot;/&quot;</span>)
+122:     <span class="ruby-keyword kw">end</span></pre>
+					</div>
+					
+				</div>
+
+				
+
+				
+			</div>
+
+		
+		</div>
+	
+
+	</div>
+
+
+	<div id="rdoc-debugging-section-dump" class="debugging-section">
+	
+		<p>Disabled; run with --debug to generate this.</p>
+	
+	</div>
+
+	<div id="validator-badges">
+		<p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+		<p><small>Generated with the <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish
+			Rdoc Generator</a> 1.1.6</small>.</p>
+	</div>
+
+</body>
+</html>
+
