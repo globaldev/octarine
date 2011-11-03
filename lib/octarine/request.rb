@@ -61,6 +61,7 @@ module Octarine # :nodoc:
       end
       headers = res.headers
       headers.delete("transfer-encoding")
+      headers.delete("content-length")
       Octarine::Response.new(res.body, headers, res.status)
     end
     
