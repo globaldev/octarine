@@ -57,6 +57,16 @@ module Octarine # :nodoc:
       end
     end
     
+    # :call-seq: path.without(part) -> new_path
+    # 
+    # Return a new path without part.
+    # 
+    #   path = Path.new("/users/:id", "/users/1")
+    #   path.without("users").to_s   #=> "/1"
+    # 
+    #   path = Path.new("/users/:id", "/users/1")
+    #   path.without(":id").to_s     #=> "/users"
+    # 
     def without(part)
       dup.tap do |cp|
         cp.template = @template.without(part)
@@ -64,14 +74,34 @@ module Octarine # :nodoc:
       end
     end
     
+    # :call-seq: path.merge(hash) -> new_path
+    # 
+    # Returns a new path with contents of hash merged in to the path parameters.
+    # 
+    #   path = Path.new("/users/:id/favourites", "/users/1/favourites?limit=10")
+    #   new_path = path.merge(:id => 2, "offset" => 20)
+    #   new_path.to_s   #=> "users/2/favourites?limit=10&offset=20"
+    # 
     def merge(other)
       dup.tap {|cp| cp.params.merge!(other)}
     end
     
+    # :call-seq: path + string -> new_path
+    # 
+    # Returns a new path with string appended.
+    # 
+    #   path = Path.new("/users/:id", "/users/1")
+    #   new_path = (path + "favourites/:favourite_id").merge(:favourite_id => 2)
+    #   new_path.to_s   #=> "/users/1/favourites/2"
+    # 
     def +(part)
       dup.tap {|cp| cp.template = @template + part}
     end
     
+    # :call-seq: path.to_s -> string
+    # 
+    # Returns the path as a string.
+    # 
     def to_s
       @template.apply(@params)
     end
