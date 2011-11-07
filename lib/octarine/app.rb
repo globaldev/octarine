@@ -75,7 +75,9 @@ module Octarine # :nodoc:
         instance.router = HttpRouter.new
         @handlers.each do |method, *args|
           block = args.pop
-          instance.router.send(method, *args) do |env|
+          route = instance.router.send(method, *args)
+          route.to do |env|
+            env.merge!("router.route" => route.original_path)
             instance.instance_exec(request_class.new(env), &block)
           end
         end

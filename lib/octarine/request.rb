@@ -23,12 +23,15 @@ module Octarine # :nodoc:
     def initialize(env)
       @env = env
       env.delete("router")
-      path_params = env.delete("router.params")
+      env.delete("router.params")
+      template = env.delete("router.route")
       @method = env["REQUEST_METHOD"]
       @host = env["SERVER_NAME"]
       @port = env["SERVER_PORT"]
-      @path = Path.new(env["SCRIPT_NAME"] || env["PATH_INFO"], path_params,
-        env["QUERY_STRING"])
+      full_path = env["SCRIPT_NAME"] || ""
+      full_path << env["PATH_INFO"] unless env["PATH_INFO"].empty?
+      full_path << "?" << env["QUERY_STRING"] unless env["QUERY_STRING"].empty?
+      @path = Path.new(template, full_path)
       @input = env["rack.input"]
     end
     
