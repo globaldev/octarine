@@ -1,5 +1,5 @@
 require_relative "response"
-require_relative "endpoint"
+require_relative "simple_http"
 
 module Octarine # :nodoc:
   class Request
@@ -49,18 +49,18 @@ module Octarine # :nodoc:
       @env[key]
     end
     
-    # :call-seq: request.to(endpoint) -> response
-    # request.to(endpoint, path) -> response
-    # request.to(endpoint, path, input) -> response
+    # :call-seq: request.to(host) -> response
+    # request.to(host, path) -> response
+    # request.to(host, path, input) -> response
     # 
     # Re-issue request to new host/path.
     # 
-    def to(endpoint=Octarine::Endpoint.new(host), to_path=path, to_input=input)
+    def to(client=Octarine::SimpleHTTP.new(host), to_path=path, to_input=input)
       res = if %W{POST PUT}.include?(method)
         header = {"content-type" => "application/json"}
-        endpoint.send(method.downcase, to_path, to_input, header)
+        client.send(method.downcase, to_path, to_input, header)
       else
-        endpoint.send(method.downcase, to_path)
+        client.send(method.downcase, to_path)
       end
       headers = res.headers
       headers.delete("transfer-encoding")

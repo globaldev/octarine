@@ -1,7 +1,6 @@
 require "forwardable"
 require "http_router"
 require_relative "request"
-require_relative "endpoint"
 
 module Octarine # :nodoc:
   module App
@@ -98,16 +97,6 @@ module Octarine # :nodoc:
     
     def self.included(includer) # :nodoc:
       includer.extend(ClassMethods)
-    end
-    
-    # :call-seq: app.endpoint(string) -> endpoint
-    # app.endpoint(client) -> endpoint
-    # 
-    # Create an Octarine::Endpoint with either a string of the host:port or
-    # a client instance API compatible with Octarine::SimpleHTTP.
-    # 
-    def endpoint(host_or_client)
-      Octarine::Endpoint.new(host_or_client)
     end
     
   end
