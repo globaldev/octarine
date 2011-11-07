@@ -77,7 +77,7 @@ module Octarine # :nodoc:
       Octarine::Response.new(response.body, response.headers, response.status)
     end
     
-    # :call-seq: endpoint.head(id, headers={}) -> response
+    # :call-seq: endpoint.get(id, headers={}) -> response
     # endpoint[id] -> response
     # 
     # Make a GET request to endpoint's path plus `/id`.
@@ -88,7 +88,7 @@ module Octarine # :nodoc:
     end
     alias [] get
     
-    # :call-seq: endpoint.head(id, body=nil, headers={}) -> response
+    # :call-seq: endpoint.post(id, body=nil, headers={}) -> response
     # 
     # Make a POST request to endpoint's path plus `/id`.
     # 
@@ -97,7 +97,7 @@ module Octarine # :nodoc:
       Octarine::Response.new(response.body, response.headers, response.status)
     end
     
-    # :call-seq: endpoint.head(id, body=nil, headers={}) -> response
+    # :call-seq: endpoint.put(id, body=nil, headers={}) -> response
     # 
     # Make a PUT request to endpoint's path plus `/id`.
     # 
@@ -106,7 +106,7 @@ module Octarine # :nodoc:
       Octarine::Response.new(response.body, response.headers, response.status)
     end
     
-    # :call-seq: endpoint.head(id, headers={}) -> response
+    # :call-seq: endpoint.delete(id, headers={}) -> response
     # 
     # Make a DELETE request to endpoint's path plus `/id`.
     # 
