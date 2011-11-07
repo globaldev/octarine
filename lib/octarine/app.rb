@@ -70,18 +70,34 @@ module Octarine # :nodoc:
       end
       
       def new(*args) # :nodoc:
-        instance = super
-        instance.router = HttpRouter.new
-        @handlers.each do |method, *args|
-          block = args.pop
-          route = instance.router.send(method, *args)
-          route.to do |env|
-            env.merge!("router.route" => route.original_path)
-            instance.instance_exec(request_class.new(env), &block)
+        super.tap do |instance|
+          instance.router = HttpRouter.new
+          @handlers.each do |method, *args|
+            block = args.pop
+            route = instance.router.send(method, *args)
+            route.to do |env|
+              env.merge!("router.route" => route.original_path)
+              response = instance.instance_exec(request_class.new(env), &block)
+              to_rack_response(response)
+            end
           end
         end
-        instance
       end
+      
+      private
+      
+      def to_rack_response(res)
+        if res.respond_to?(:status) && res.respond_to?(:headers) &&
+          res.respond_to?(:body)
+          status, headers, body = res.status, res.headers, res.body
+          [status, headers, body.respond_to?(:each) ? body : [body].compact]
+        elsif res.respond_to?(:to_ary)
+          res.to_ary
+        else
+          [200, {}, res]
+        end
+      end
+      
     end
     
     attr_accessor :router # :nodoc:
