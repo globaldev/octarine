@@ -1,0 +1,4 @@
+.DS_Store
+.bundle
+coverage
+Gemfile.lock
