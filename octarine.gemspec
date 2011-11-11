@@ -11,4 +11,6 @@ Gem::Specification.new do |s|
   s.email = "mat@sourcetagsandcodes.com"
   s.homepage = "http://github.com/globaldev/octarine"
   s.add_dependency("http_router")
+  s.add_development_dependency("rake")
+  s.add_development_dependency("rcov")
 end

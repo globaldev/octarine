@@ -1,5 +1,5 @@
 require "minitest/autorun"
-require_relative "../../lib/octarine/path_template"
+require_relative "../../lib/octarine"
 
 module Octarine
   class PathTemplateApplyTest < MiniTest::Unit::TestCase
