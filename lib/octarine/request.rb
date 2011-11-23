@@ -1,4 +1,5 @@
 require_relative "response"
+require_relative "path"
 require_relative "simple_http"
 
 module Octarine # :nodoc:

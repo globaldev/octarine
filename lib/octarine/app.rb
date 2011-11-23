@@ -1,6 +1,7 @@
 require "forwardable"
 require "http_router"
 require_relative "request"
+require_relative "path"
 
 module Octarine # :nodoc:
   module App
