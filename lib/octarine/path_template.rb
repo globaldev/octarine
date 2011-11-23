@@ -138,7 +138,6 @@ module Octarine
           parts << [:string, part.freeze]
         end
       end
-      parts
     rescue StopIteration
       parts
     end
