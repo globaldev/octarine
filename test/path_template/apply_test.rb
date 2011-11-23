@@ -110,5 +110,21 @@ module Octarine
       end
     end
     
+    def test_base_path
+      template = PathTemplate.new("/")
+      
+      result = template.apply
+      
+      assert_equal("/", result)
+    end
+    
+    def test_base_path_with_query
+      template = PathTemplate.new("/")
+      
+      result = template.apply(foo: "bar")
+      
+      assert_equal("/?foo=bar", result)
+    end
+    
   end
 end
