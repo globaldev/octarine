@@ -91,6 +91,7 @@ module Octarine # :nodoc:
     
     def apply(object, path=nil, &block)
       if object.respond_to?(:to_ary)
+        path = nil if path == "."
         return object.to_ary.map {|obj| apply(obj, path, &block)}
       end
       
