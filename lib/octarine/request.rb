@@ -38,7 +38,7 @@ module Octarine # :nodoc:
     
     # :call-seq: request[header_name] -> header_value
     # 
-    # Retrieve headers.
+    # Retrieve header.
     #   request["Content-Length"]   #=> "123"
     #   request["Content-Type"]     #=> "application/json"
     # 
@@ -47,7 +47,7 @@ module Octarine # :nodoc:
       unless upper_key == "CONTENT_LENGTH" || upper_key == "CONTENT_TYPE"
         upper_key[0,0] = "HTTP_"
       end
-      @env[key]
+      @env[upper_key]
     end
     
     # :call-seq: request.to(host) -> response
