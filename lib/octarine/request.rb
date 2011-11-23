@@ -29,10 +29,11 @@ module Octarine # :nodoc:
       @method = env["REQUEST_METHOD"]
       @host = env["SERVER_NAME"]
       @port = env["SERVER_PORT"]
-      full_path = env["SCRIPT_NAME"] || ""
-      full_path << env["PATH_INFO"] unless env["PATH_INFO"].empty?
+      path = env["SCRIPT_NAME"] || ""
+      path << env["PATH_INFO"] unless env["PATH_INFO"].empty?
+      full_path = path.dup
       full_path << "?" << env["QUERY_STRING"] unless env["QUERY_STRING"].empty?
-      @path = Path.new(template, full_path)
+      @path = Path.new(template || path, full_path)
       @input = env["rack.input"]
     end
     
@@ -50,23 +51,39 @@ module Octarine # :nodoc:
       @env[upper_key]
     end
     
+    # :call-seq: request.header -> hash
+    # request.headers -> hash
+    # 
+    # Get header as a hash.
+    #   request.header
+    #   #=> {"content-length" => "123", "content-type" => "application/json"}
+    # 
+    def header
+      Hash[@env.select do |k,v|
+        k =~ /^HTTP_[^(VERSION)]/ || %W{CONTENT_LENGTH CONTENT_TYPE}.include?(k)
+      end.map do |key, value|
+        [key.sub(/HTTP_/, "").tr("_", "-").downcase, value]
+      end]
+    end
+    alias headers header
+    
     # :call-seq: request.to(host) -> response
     # request.to(host, path) -> response
     # request.to(host, path, input) -> response
     # 
     # Re-issue request to new host/path.
     # 
-    def to(client=Octarine::SimpleHTTP.new(host), to_path=path, to_input=input)
+    def to(client, to_path=path, to_input=input)
+      client = SimpleHTTP.new(client.to_str) if client.respond_to?(:to_str)
       res = if %W{POST PUT}.include?(method)
-        header = {"content-type" => "application/json"}
-        client.send(method.downcase, to_path, to_input, header)
+        client.__send__(method.downcase, to_path, to_input, header_for_rerequest)
       else
-        client.send(method.downcase, to_path)
+        client.__send__(method.downcase, to_path, header_for_rerequest)
       end
-      headers = res.headers
-      headers.delete("transfer-encoding")
-      headers.delete("content-length")
-      Octarine::Response.new(res.body, headers, res.status)
+      response_headers = res.headers
+      response_headers.delete("transfer-encoding")
+      response_headers.delete("content-length")
+      Octarine::Response.new(res.body, response_headers, res.status)
     end
     
     # :call-seq: request.redirect(path) -> response
@@ -78,15 +95,19 @@ module Octarine # :nodoc:
     end
     
     def to_s # :nodoc:
-      header = Hash[@env.select do |k,v|
-        k =~ /^HTTP_[^(VERSION)]/ || %W{CONTENT_LENGTH CONTENT_TYPE}.include?(k)
-      end.map do |key, value|
-        [key.sub(/HTTP_/, "").split(/_/).map(&:capitalize).join("-"), value]
-      end]
       version = " " + @env["HTTP_VERSION"] if @env.key?("HTTP_VERSION")
       "#{method} #{path}#{version}\r\n" << header.map do |key, value|
+        key = key.split(/-/).map(&:capitalize).join("-")
         "#{key}: #{value}"
       end.join("\r\n") << "\r\n\r\n"
+    end
+    
+    private
+    
+    def header_for_rerequest
+      head = header
+      head.delete("host")
+      head
     end
     
   end
