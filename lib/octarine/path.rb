@@ -28,7 +28,7 @@ module Octarine # :nodoc:
   # values_at and all Enumerable methods
   # 
   # The following methods are available and behave as if path was a string:
-  # ===, =~, bytesize, length, size
+  # =~, bytesize, length, size
   # 
   class Path
     attr_reader :params
@@ -41,7 +41,7 @@ module Octarine # :nodoc:
       :rassoc, :to_a, :value?, :values, :values_at,
       *Enumerable.public_instance_methods
     def_delegator :@params, :dup, :to_hash
-    def_delegators :@full_path, :===, :=~, :bytesize, :length, :size
+    def_delegators :@full_path, :=~, :bytesize, :length, :size
     
     # :call-seq: Path.new(template, path_string) -> path
     # 
@@ -106,6 +106,23 @@ module Octarine # :nodoc:
       @template.apply(@params)
     end
     alias to_str to_s
+    
+    # :call-seq: path == other -> bool
+    # 
+    # Returns true if other is equal to path, false otherwise.
+    # 
+    def ==(other)
+      self.class === other && to_s == other.to_s
+    end
+    
+    # :call-seq: path === other -> bool
+    # 
+    # Returns true if other as a string is equal to path as a string, false
+    # otherwise.
+    # 
+    def ===(other)
+      to_s === other.to_s
+    end
     
     def initialize_copy(source) # :nodoc:
       super
