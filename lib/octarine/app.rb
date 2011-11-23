@@ -37,16 +37,18 @@ module Octarine # :nodoc:
       # 
       # Adds block as a handler for path when the request method is PUT.
       
-      ##
-      # :method: default
-      # :call-seq: default {|request| block }
-      # 
-      # Adds block as a handler for when no path is matched.
-      
-      [:add, :get, :post, :delete, :put, :default].each do |method|
+      [:add, :get, :post, :delete, :put].each do |method|
         define_method(method) do |*args, &block|
           (@handlers ||= []) << [method, *args, block]
         end
+      end
+      
+      # :call-seq: default {|request| block }
+      # 
+      # Adds block as a handler for when no path is matched.
+      # 
+      def default(&block)
+        @default = block
       end
       
       def add_route(route) # :nodoc:
@@ -82,6 +84,10 @@ module Octarine # :nodoc:
               to_rack_response(response)
             end
           end
+          instance.router.default(Proc.new do |env|
+            response = instance.instance_exec(request_class.new(env), &@default)
+            to_rack_response(response)
+          end) if @default
         end
       end
       
