@@ -39,7 +39,7 @@ module Octarine
         end
       end
       
-      out = path.join("/")
+      out = path == [nil] ? "/" : path.join("/")
       out << ".#{format}" if format
       out << query(params) if !params.empty?
       out
