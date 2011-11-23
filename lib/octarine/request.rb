@@ -86,14 +86,6 @@ module Octarine # :nodoc:
       Octarine::Response.new(res.body, response_headers, res.status)
     end
     
-    # :call-seq: request.redirect(path) -> response
-    # 
-    # Issue redirect to path.
-    # 
-    def redirect(path)
-      
-    end
-    
     def to_s # :nodoc:
       version = " " + @env["HTTP_VERSION"] if @env.key?("HTTP_VERSION")
       "#{method} #{path}#{version}\r\n" << header.map do |key, value|

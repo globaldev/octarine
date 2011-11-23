@@ -51,10 +51,6 @@ module Octarine # :nodoc:
         @default = block
       end
       
-      def add_route(route) # :nodoc:
-        (@handlers ||= []) << [__method__, route, nil]
-      end
-      
       # :call-seq: request_class(klass)
       # 
       # Set the class of the request object handed to the path handler blocks.
