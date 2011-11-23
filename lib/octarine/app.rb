@@ -100,6 +100,8 @@ module Octarine # :nodoc:
           [status, headers, body.respond_to?(:each) ? body : [body].compact]
         elsif res.respond_to?(:to_ary)
           res.to_ary
+        elsif res.respond_to?(:to_str)
+          [200, {}, [res.to_str]]
         else
           [200, {}, res]
         end
