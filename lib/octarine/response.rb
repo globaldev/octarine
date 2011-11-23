@@ -73,7 +73,7 @@ module Octarine # :nodoc:
       when 2
         @body = value
       else
-        raise ArgumentError("Unexpected key #{key}")
+        raise ArgumentError.new("Unexpected key #{key}")
       end
     end
     
