@@ -45,8 +45,40 @@ module Octarine # :nodoc:
       
       [:add, :get, :post, :delete, :put, :default].each do |method|
         define_method(method) do |*args, &block|
+          if Hash === args.last
+            restrictions = Array(args.last[:restrict])
+          else
+            restrictions = []
+            args << {}
+          end
+          restrictions << @current_restriction if @current_restriction
+          args.last[:restrict] = restrictions.flatten
           (@handlers ||= []) << [method, *args, block]
         end
+      end
+      
+      # :call-seq:
+      #   restriction(name, response=401) {|request| block }
+      #   restriction(name, response=401, proc)
+      # 
+      # Create a named restriction. response will be returned if the block
+      # returns true, otherwise the handler subject to the restriction will be
+      # executed as usual.
+      # 
+      def restriction(name, response=401, proc=nil, &block)
+        (@restrictions ||= {})[name] = [response, proc || block]
+      end
+      
+      # :call-seq: restrict(name) { block }
+      # 
+      # All handlers defined within the block will be subject to the named
+      # restriction.
+      # 
+      def restrict(restriction)
+        (@current_restriction ||= []) << restriction
+        yield
+      ensure
+        @current_restriction.pop
       end
       
       # Set the class of the request object handed to the path handler blocks.
@@ -65,10 +97,12 @@ module Octarine # :nodoc:
       
       def new(*args) # :nodoc:
         request_class = @request_class || Octarine::Request
+        restrictions = @restrictions
         handlers = @handlers
         super.instance_eval do
           @request_class ||= request_class
           @router ||= HttpRouter.new
+          @restrictions = restrictions
           handlers.each {|m,*args| register_handler(m, *args[0..-2], &args[-1])}
           self
         end
@@ -103,23 +137,28 @@ module Octarine # :nodoc:
         res.to_ary
       elsif res.respond_to?(:to_str)
         [200, {}, [res.to_str]]
+      elsif res.respond_to?(:to_i)
+        [res.to_i, {}, []]
       else
         [200, {}, res]
       end
     end
     
-    def register_handler(method, *args, &block) # :nodoc:
+    def register_handler(method, *args, &block)
       return register_default(&block) if method == :default
+      restrictions = Hash === args[-1] ? Array(args[-1].delete(:restrict)) : []
+      restrictions.map! {|name| @restrictions[name]}
       route = router.send(method, *args)
       route.to do |env|
         env.merge!("router.route" => route.original_path)
         request = request_class.new(env)
-        response = instance_exec(request, &block)
+        response, = restrictions.find {|_,restr| instance_exec(request, &restr)}
+        response ||= instance_exec(request, &block)
         to_rack_response(response)
       end
     end
     
-    def register_default(&block) # :nodoc:
+    def register_default(&block)
       router.default(Proc.new do |env|
         to_rack_response(instance_exec(request_class.new(env), &block))
       end)

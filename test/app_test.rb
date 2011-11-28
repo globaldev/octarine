@@ -135,6 +135,148 @@ module Octarine
       assert_equal([], body)
     end
     
+    def test_restrict_always
+      klass = Class.new do
+        include Octarine::App
+        restriction(:always) {|req| true}
+        
+        add "/", :restrict => :always do |request|
+          Octarine::Response.new("test")
+        end
+      end
+      
+      instance = klass.new
+      
+      status, header, body = instance.call(@env)
+      
+      assert_equal(401, status)
+      assert_equal({}, header)
+      assert_equal([], body)
+    end
+    
+    def test_restrict_never
+      klass = Class.new do
+        include Octarine::App
+        restriction(:never) {|req| false}
+        
+        add "/", :restrict => :never do |request|
+          Octarine::Response.new("test")
+        end
+      end
+      
+      instance = klass.new
+      
+      status, header, body = instance.call(@env)
+      
+      assert_equal(200, status)
+      assert_equal({"content-type"=>"text/html"}, header)
+      assert_equal(["test"], body)
+    end
+    
+    def test_restrict_conditional
+      klass = Class.new do
+        include Octarine::App
+        restriction(:user) {|req| req.path.user_id == "101"}
+        
+        add "/user/:user_id", :restrict => :user do |request|
+          Octarine::Response.new("test")
+        end
+      end
+      
+      instance = klass.new
+      
+      status, header, body = instance.call(@env.merge("PATH_INFO" => "/user/100"))
+      
+      assert_equal(200, status)
+      assert_equal({"content-type"=>"text/html"}, header)
+      assert_equal(["test"], body)
+      
+      status, header, body = instance.call(@env.merge("PATH_INFO" => "/user/101"))
+      
+      assert_equal(401, status)
+      assert_equal({}, header)
+      assert_equal([], body)
+    end
+    
+    def test_restrict_custom_error_code
+      klass = Class.new do
+        include Octarine::App
+        restriction(:not_found, 404) {|req| true}
+        
+        add "/", :restrict => :not_found do |request|
+          Octarine::Response.new("test")
+        end
+      end
+      
+      instance = klass.new
+      
+      status, header, body = instance.call(@env)
+      
+      assert_equal(404, status)
+      assert_equal({}, header)
+      assert_equal([], body)
+    end
+    
+    def test_restrict_custom_response
+      klass = Class.new do
+        include Octarine::App
+        restriction(:generic, [500, {"x-error" => "true"}, ["there was a problem"]]) {|req| true}
+        
+        add "/", :restrict => :generic do |request|
+          Octarine::Response.new("test")
+        end
+      end
+      
+      instance = klass.new
+      
+      status, header, body = instance.call(@env)
+      
+      assert_equal(500, status)
+      assert_equal({"x-error" => "true"}, header)
+      assert_equal(["there was a problem"], body)
+    end
+    
+    def test_restrict_block
+      klass = Class.new do
+        include Octarine::App
+        restriction(:generic, [500, {"x-error" => "true"}, ["there was a problem"]]) {|req| true}
+        
+        restrict :generic do
+          add "/" do |request|
+            Octarine::Response.new("test")
+          end
+          
+          add "/foo" do |request|
+            Octarine::Response.new("test")
+          end
+        end
+        
+        add "/bar" do |request|
+          Octarine::Response.new("test")
+        end
+      end
+      
+      instance = klass.new
+      
+      status, header, body = instance.call(@env)
+      
+      assert_equal(500, status)
+      assert_equal({"x-error" => "true"}, header)
+      assert_equal(["there was a problem"], body)
+      
+      status, header, body = instance.call(@env.merge("PATH_INFO" => "/foo"))
+      
+      assert_equal(500, status)
+      assert_equal({"x-error" => "true"}, header)
+      assert_equal(["there was a problem"], body)
+      
+      status, header, body = instance.call(@env.merge("PATH_INFO" => "/bar"))
+      
+      assert_equal(200, status)
+      assert_equal({"content-type"=>"text/html"}, header)
+      assert_equal(["test"], body)
+    end
+    
     def test_default
       klass = Class.new do
         include Octarine::App
