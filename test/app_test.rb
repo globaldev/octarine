@@ -236,6 +236,26 @@ module Octarine
       assert_equal(["there was a problem"], body)
     end
     
+    def test_restrict_lambda_response
+      klass = Class.new do
+        include Octarine::App
+        not_auth = ->(req) {[401, {}, ["you are not authorized for #{req.path}"]]}
+        restriction(:user, not_auth) {|req| req.path.user_id != "100"}
+        
+        add "/user/:user_id", :restrict => :user do |request|
+          Octarine::Response.new("test")
+        end
+      end
+      
+      instance = klass.new
+      
+      status, header, body = instance.call(@env.merge("PATH_INFO" => "/user/101"))
+      
+      assert_equal(401, status)
+      assert_equal({}, header)
+      assert_equal(["you are not authorized for /user/101"], body)
+    end
+    
     def test_restrict_block
       klass = Class.new do
         include Octarine::App

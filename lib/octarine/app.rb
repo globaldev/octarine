@@ -153,7 +153,11 @@ module Octarine # :nodoc:
         env.merge!("router.route" => route.original_path)
         request = request_class.new(env)
         response, = restrictions.find {|_,restr| instance_exec(request, &restr)}
-        response ||= instance_exec(request, &block)
+        if response.respond_to?(:to_proc)
+          response = instance_exec(request, &response)
+        elsif response.nil?
+          response = instance_exec(request, &block)
+        end
         to_rack_response(response)
       end
     end
