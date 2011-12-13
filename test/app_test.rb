@@ -60,6 +60,25 @@ module Octarine
       assert_equal([], body)
     end
     
+    def test_get_with_query
+      path = nil
+      klass = Class.new do
+        include Octarine::App
+        
+        get "/foo" do |request|
+          path = request.path
+          Octarine::Response.new("test")
+        end
+      end
+      instance = klass.new
+      
+      status, header, body = instance.call(@env.merge("REQUEST_METHOD" => "GET", "PATH_INFO" => "/foo", "QUERY_STRING" => "bar=baz&qux=quxx"))
+      
+      assert_equal(200, status)
+      assert_equal(["test"], body)
+      assert_equal("/foo?bar=baz&qux=quxx", path.to_s)
+    end
+    
     def test_post
       klass = Class.new do
         include Octarine::App

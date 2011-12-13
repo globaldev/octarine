@@ -74,5 +74,11 @@ module Octarine
       refute(path === "/users/2")
     end
     
+    def test_query
+      path = Path.new("/users", "/users?ids=1,2,3")
+      
+      assert_equal("/users?ids=1,2,3", path.to_s)
+    end
+    
   end
 end

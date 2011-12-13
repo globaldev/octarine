@@ -50,6 +50,22 @@ module Octarine
       assert_equal("test", result.body)
     end
     
+    def test_to_with_query
+      request = Octarine::Request.new(@env.merge("PATH_INFO" => "/test", "QUERY_STRING" => "foo=bar&baz=qux"))
+      
+      @mock_client = MiniTest::Mock.new
+      response = @response_klass.new(200, {"content-length" => "4", "content-type" => "text/plain"}, "test")
+      @mock_client.expect(:get, response, [Octarine::Path.new("/test", "/test?foo=bar&baz=qux"), {}])
+      @mock_client_class.expect(:new, @mock_client, ["example.com"])
+      
+      result = request.to("example.com")
+      
+      @mock_client.verify
+      assert_equal(200, result.status)
+      assert_equal({"content-type" => "text/plain"}, result.headers)
+      assert_equal("test", result.body)
+    end
+    
     def test_post_to
       request = Octarine::Request.new(@env.merge("REQUEST_METHOD" => "POST", "PATH_INFO" => "/submit", "CONTENT_TYPE" => "application/x-www-form-urlencoded", "rack.input" => StringIO.new("foo=bar")))
       
