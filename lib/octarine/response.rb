@@ -24,14 +24,14 @@ module Octarine # :nodoc:
     end
     
     # :call-seq: response.update {|body| block } -> response
-    # response.update(path) {|value| block } -> response
+    # response.update(path[, opts]) {|value| block } -> response
     # 
     # Called without an argument, the block will be supplied the response body,
     # and the response body will be set to the result of the block. The response
     # itself is returned.
     # 
-    # When called with an argument the body should be a hash, the body will be
-    # traversed accoring to the path supplied, the value of the body will be
+    # When called with a path argument the body should be a hash, the body will
+    # be traversed accoring to the path supplied, the value of the body will be
     # yielded to the block, and then replaced with the result of the block.
     # Example:
     #   response.body
@@ -42,11 +42,48 @@ module Octarine # :nodoc:
     #   response.body
     #   #=> {"data" => [{"user" => {"id" => "1234", ...}, "message" => "..."}]}
     # 
-    def update(path=nil, &block)
+    # Additional options can be passed as a hash, the options available are:
+    # [remove]    The full path to the element that should be removed if the
+    #             block returns nil. Must be a parent of the element targeted
+    #             by the main path argument
+    # [remove_if] If supplied along with the remove option the result of the
+    #             block will be tested againt this value (using ===) rather
+    #             than nil
+    # [link]      Should be supplied with a value of a hash, in which the key
+    #             is a path to an element to be updated, and the value is an
+    #             array of a an element and a method from which to derive a
+    #             value
+    # Example:
+    #   response.body
+    #   #=> {"data" => [1, 2, 3], "total" => 3}
+    #   
+    #   user_names = {1 => "Arthur", 2 => "Ford"}
+    #   
+    #   total_to_length = {"total" => ["data", :length]}
+    #   response.update("data.", remove: "data.", link: total_to_length) do |id|
+    #     user_names[id]
+    #   end
+    #   
+    #   response.body
+    #   # {"data" => ["Arthur", "Ford"], "total" => 2}
+    # 
+    def update(path=nil, options={}, &block)
       @body = if body.respond_to?(:to_ary) && path.nil?
         block.call(body)
       else
-        apply(body, path, &block)
+        path = nil if path == "."
+        remove_path = options[:remove]
+        remove_if = remove_path ? options[:remove_if] : -> x {false}
+        apply(body, path, remove_path, remove_if, &block)
+      end
+      (options[:link] || []).each do |dest, (source_path, source_method)|
+        update(dest) do |val|
+          source = body
+          source_path.split(".").each do |part|
+            source = source[part]
+          end
+          source.send(source_method)
+        end
       end
       self
     end
@@ -89,19 +126,39 @@ module Octarine # :nodoc:
     
     private
     
-    def apply(object, path=nil, &block)
+    def apply(object, path=nil, remove_path=nil, remove_flag=nil, &block)
       if object.respond_to?(:to_ary)
-        path = nil if path == "."
-        return object.to_ary.map {|obj| apply(obj, path, &block)}
+        return object.to_ary.each_with_object([]) do |obj, collection|
+          result = catch :remove do
+            apply(obj, path, remove_path, remove_flag, &block)
+          end
+          if result != :__remove__
+            collection << result
+          elsif remove_path.nil?
+            throw :remove, :__remove__
+          end
+        end
       end
+      
+      remove_key, remove_rest = remove_path.split(".", 2) if remove_path
       
       key, rest = path.split(".", 2) if path
       if rest
-        object[key] = apply(object[key], rest, &block)
+        object[key] = apply(object[key], rest, remove_rest, remove_flag, &block)
       elsif key
-        object[key] = block.call(object[key])
+        result = block.call(object[key])
+        should_remove = remove_flag === result
+        if should_remove && key == remove_path
+          object.delete(key)
+        elsif should_remove
+          throw :remove, :__remove__
+        else
+          object[key] = result
+        end
       else
-        return block.call(object)
+        result = block.call(object)
+        throw :remove, :__remove__ if remove_flag === result
+        return result
       end
       object
     end

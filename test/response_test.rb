@@ -56,6 +56,96 @@ module Octarine
       assert_equal(expected, response.body)
     end
     
+    def test_update_remove
+      response = Response.new({"data" => [{"user" => 1}, {"user" => 2}, {"user" => 3}]})
+      names = {1 => "Arthur", 2 => "Ford", 3 => nil}
+      
+      response.update("data.user", remove: "data.", remove_if: nil) do |id|
+        names[id]
+      end
+      
+      expected = {"data" => [{"user" => "Arthur"}, {"user" => "Ford"}]}
+      assert_equal(expected, response.body)
+    end
+    
+    def test_update_deep_remove
+      response = Response.new({"a" =>
+        [
+          {"b" => {"c" => [
+            {"d" => "e"},
+            {"d" => "f"}
+          ]}},
+          {"b" => {"c" => [
+            {"d" => "g"}
+          ]}}
+      ]})
+      
+      response.update("a.b.c.d", remove: "a.", remove_if: /[A-E]/) do |val|
+        val.upcase
+      end
+      
+      expected = {"a" => [{"b" => {"c" => [{"d" => "G"}]}}]}
+      assert_equal(expected, response.body)
+    end
+    
+    def test_update_deep_remove2
+      response = Response.new({"a" => [{"b" => {"c" => [
+        {"d" => "e"},
+        {"d" => "f"}
+      ]}}]})
+      
+      response.update("a.b.c.d", remove: "a.b.c.", remove_if: /[A-E]/) do |val|
+        val.upcase
+      end
+      
+      expected = {"a" => [{"b" => {"c" => [{"d" => "F"}]}}]}
+      assert_equal(expected, response.body)
+    end
+    
+    def test_remove_from_hash
+      response = Response.new({"data" => [
+        {"user" => 1, "item" => "towel"},
+        {"user" => 2, "item" => "guide book"},
+        {"user" => 3, "item" => "Heart of Gold"}]})
+      names = {1 => "Arthur", 2 => "Ford", 3 => nil}
+      
+      response.update("data.user", remove: "data.user", remove_if: nil) do |id|
+        names[id]
+      end
+      
+      expected = {"data" => [
+        {"user" => "Arthur", "item" => "towel"},
+        {"user" => "Ford", "item" => "guide book"},
+        {"item" => "Heart of Gold"}]}
+      assert_equal(expected, response.body)
+    end
+    
+    def test_doesnt_remove_nils_when_not_requested
+      response = Response.new({"data" => [{"user" => 1}, {"user" => 2}, {"user" => 3}]})
+      names = {1 => "Arthur", 2 => "Ford", 3 => nil}
+      
+      response.update("data.user") do |id|
+        names[id]
+      end
+      
+      expected = {"data" => [{"user" => "Arthur"}, {"user" => "Ford"}, {"user" => nil}]}
+      assert_equal(expected, response.body)
+    end
+    
+    def test_update_link
+      response = Response.new({
+        "data" => [{"user" => 1}, {"user" => 2}, {"user" => 3}],
+        "size" => 3})
+      names = {1 => "Arthur", 2 => "Ford", 3 => nil}
+      
+      response.update("data.user", remove: "data.", link: {"size" => ["data", :size]}) do |id|
+        names[id]
+      end
+      
+      expected = {"data" => [{"user" => "Arthur"}, {"user" => "Ford"}], "size" => 2}
+      assert_equal(expected, response.body)
+    end
+    
     def test_to_ary
       response = Response.new("foo", {"content-length" => "3", "content-type" => "text/plain"}, 200)
       
