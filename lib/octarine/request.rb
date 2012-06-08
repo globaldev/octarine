@@ -16,6 +16,8 @@ module Octarine # :nodoc:
     attr_reader :path
     # The request POST/PUT body
     attr_reader :input
+    # A request-local object cache for application's usage
+    attr_reader :cache
     
     # :call-seq: Request.new(env) -> request
     # 
@@ -35,6 +37,7 @@ module Octarine # :nodoc:
       full_path << "?" << env["QUERY_STRING"] unless env["QUERY_STRING"].empty?
       @path = Path.new(template || path, full_path)
       @input = env["rack.input"]
+      @cache = {}
     end
     
     # :call-seq: request[header_name] -> header_value
