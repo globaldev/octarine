@@ -154,6 +154,31 @@ module Octarine
       assert_equal([], body)
     end
     
+    def test_options
+      klass = Class.new do
+        include Octarine::App
+        
+        options "/foo" do |request|
+          Octarine::Response.new("test")
+        end
+      end
+      instance = klass.new
+      
+      status, header, body = instance.call(@env.merge("REQUEST_METHOD" => "OPTIONS", "PATH_INFO" => "/foo"))
+      
+      assert_equal(200, status)
+      assert_equal(["test"], body)
+      
+      status, header, body = instance.call(@env.merge("REQUEST_METHOD" => "OPTIONS", "PATH_INFO" => "/bar"))
+      
+      assert_equal(404, status)
+      
+      status, header, body = instance.call(@env.merge("REQUEST_METHOD" => "GET", "PATH_INFO" => "/foo"))
+      
+      assert_equal(405, status)
+      assert_equal([], body)
+    end
+    
     def test_restrict_always
       klass = Class.new do
         include Octarine::App

@@ -43,7 +43,8 @@ module Octarine # :nodoc:
       # 
       # Adds block as a handler for when no path is matched.
       
-      [:add, :get, :post, :delete, :put, :default].each do |method|
+      methods = [:add, :get, :post, :delete, :put, :options, :default]
+      methods.each do |method|
         define_method(method) do |*args, &block|
           if Hash === args.last
             restrictions = Array(args.last[:restrict])
@@ -144,11 +145,12 @@ module Octarine # :nodoc:
       end
     end
     
-    def register_handler(method, *args, &block)
+    def register_handler(method, path="/", opts={}, &block)
       return register_default(&block) if method == :default
-      restrictions = Hash === args[-1] ? Array(args[-1].delete(:restrict)) : []
+      restrictions = Array(opts.delete(:restrict))
       restrictions.map! {|name| @restrictions[name]}
-      route = router.send(method, *args)
+      opts[:request_method] = method unless method == :add
+      route = router.add(path, opts)
       route.to do |env|
         env.merge!("router.route" => route.original_path)
         request = request_class.new(env)
