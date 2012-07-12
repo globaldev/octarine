@@ -82,6 +82,22 @@ module Octarine
       assert_equal("baz", result.body)
     end
     
+    def test_options_to
+      request = Octarine::Request.new(@env.merge("REQUEST_METHOD" => "OPTIONS", "PATH_INFO" => "/test"))
+      
+      @mock_client = MiniTest::Mock.new
+      response = @response_klass.new(204, {"allow" => "GET"}, nil)
+      @mock_client.expect(:run_request, response, [:options, Octarine::Path.new("/test", "/test"), {}])
+      @mock_client_class.expect(:new, @mock_client, ["example.com"])
+      
+      result = request.to("example.com")
+      
+      @mock_client.verify
+      assert_equal(204, result.status)
+      assert_equal({"allow" => "GET"}, result.headers)
+      assert_nil(result.body)
+    end
+    
     def test_to_s
       request = Octarine::Request.new(@env.merge("HTTP_ACCEPT" => "text/plain"))
       

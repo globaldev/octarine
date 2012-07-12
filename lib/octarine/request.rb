@@ -75,7 +75,9 @@ module Octarine # :nodoc:
     # 
     def to(client, to_path=path, to_input=input)
       client = SimpleHTTP.new(client.to_str) if client.respond_to?(:to_str)
-      res = if %W{POST PUT}.include?(method)
+      res = if method == "OPTIONS" && client.respond_to?(:run_request)
+        client.run_request(:options, to_path, header_for_rerequest)
+      elsif %W{POST PUT}.include?(method)
         client.__send__(method.downcase, to_path, to_input, header_for_rerequest)
       else
         client.__send__(method.downcase, to_path, header_for_rerequest)

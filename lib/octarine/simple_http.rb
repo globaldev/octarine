@@ -28,7 +28,7 @@ module Octarine # :nodoc:
     # #headers, and #body
     # 
     def head(path, headers={})
-      request(Net::HTTP::Head.new(path, headers))
+      run_request(:head, path, nil, headers)
     end
     
     # :call-seq: simple_http.get(path, headers={}) -> response
@@ -37,7 +37,7 @@ module Octarine # :nodoc:
     # #headers, and #body
     # 
     def get(path, headers={})
-      request(Net::HTTP::Get.new(path, headers))
+      run_request(:get, path, nil, headers)
     end
     
     # :call-seq: simple_http.post(path, body=nil, headers={}) -> response
@@ -46,9 +46,7 @@ module Octarine # :nodoc:
     # #headers, and #body
     # 
     def post(path, body=nil, headers={})
-      req = Net::HTTP::Post.new(path, headers)
-      req.body = body if body
-      request(req)
+      run_request(:post, path, body, headers)
     end
     
     # :call-seq: simple_http.put(path, body=nil, headers={}) -> response
@@ -57,9 +55,7 @@ module Octarine # :nodoc:
     # #headers, and #body
     # 
     def put(path, body=nil, headers={})
-      req = Net::HTTP::Put.new(path, headers)
-      req.body = body if body
-      request(req)
+      run_request(:put, path, body, headers)
     end
     
     # :call-seq: simple_http.delete(path, headers={}) -> response
@@ -68,7 +64,28 @@ module Octarine # :nodoc:
     # #headers, and #body
     # 
     def delete(path, headers={})
-      request(Net::HTTP::Delete.new(path, headers))
+      run_request(:delete, path, nil, headers)
+    end
+    
+    # :call-seq: simple_http.options(path, headers={}) -> response
+    # 
+    # Perform an OPTIONS request, returns a response that responds to #status,
+    # #headers, and #body
+    # 
+    def options(path, headers)
+      run_request(:options, path, nil, headers)
+    end
+    
+    # :call-seq: simple_http.run_request(method, path, body, headers) -> res
+    # 
+    # Perform request, returns a response that responds to #status, #headers,
+    # and #body
+    # 
+    def run_request(method, path, body, headers)
+      klass = Net::HTTP.const_get(method.to_s.capitalize)
+      req.klass.new(path, headers)
+      req.body = body if body
+      request(req)
     end
     
     private
