@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = "octarine"
-  s.version = "0.0.2"
+  s.version = "0.0.3"
   s.summary = "HTTP routing proxy DSL"
   s.description = "Sinatra-like DSL for writing a HTTP routing proxy."
   s.files = %W{lib}.map {|dir| Dir["#{dir}/**/*.rb"]}.flatten << "README.rdoc"
